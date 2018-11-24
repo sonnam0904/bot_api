@@ -12,5 +12,33 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('admin.admin.index');
+});
+
+Route::get('/home', function () {
+    return redirect()->route('admin.admin.index');
+});
+
+/**
+ * admin page route
+ */
+Route::group(
+    [
+        'prefix' => 'admin'
+    ], function () {
+
+    Route::get('/', 'Admin\AdminBaseController@index')
+        ->name('admin.admin.index');
+
+    Route::post('/login', 'Admin\AdminBaseController@login')
+        ->name('admin.admin.login');
+
+    Route::group(
+        [
+            'prefix' => 'customer'
+        ], function () {
+
+        Route::get('/', 'Admin\CustomerController@index')
+            ->name('admin.customer.index');
+    });
 });
