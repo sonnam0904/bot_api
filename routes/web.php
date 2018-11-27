@@ -40,5 +40,7 @@ Route::group(
 
         Route::get('/', 'Admin\CustomerController@index')
             ->name('admin.customer.index');
+        Route::post('/save', 'Admin\CustomerController@save')
+            ->name('admin.customer.save');
     });
 });

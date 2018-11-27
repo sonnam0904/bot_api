@@ -12,12 +12,25 @@
     <script>
         $('#user-modal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget) // Button that triggered the modal
-            var recipient = button.data('whatever') // Extract info from data-* attributes
+            var customer_name = button.data('customer_name')
+            var mobile = button.data('mobile')
+            var email = button.data('email')
+            var customer_group_id = button.data('customer_group_id')
+            var customer_id = button.data('customer_id')
+            var address = button.data('address')
+            var title = 'Thêm mới'
+            title = button.data('title')
             // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
             // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
             var modal = $(this)
-            modal.find('.modal-title').text('New message to ' + recipient)
-            modal.find('.modal-body input').val(recipient)
+            modal.find('.modal-title').text(title)
+
+            modal.find('.modal-body input[name="customer_id"]').val(customer_id)
+            modal.find('.modal-body input[name="customer_name"]').val(customer_name)
+            modal.find('.modal-body input[name="mobile"]').val(mobile)
+            modal.find('.modal-body input[name="email"]').val(email)
+            modal.find('.modal-body select[name="customer_group_id"]').val(customer_group_id)
+            modal.find('.modal-body textarea[name="address"]').html(address)
         })
     </script>
 @endpush
@@ -37,6 +50,16 @@
             </button>
         </div>
     @endif
+    @if(Session::has('error_message'))
+        <div class="alert alert-error">
+            <span class="glyphicon glyphicon-flag"></span>
+            {!! session('error_message') !!}
+
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
 @stop
 
 @section('content')
@@ -50,14 +73,17 @@
         </div>
 
         <div class="panel-body">
-            <table class="table table-striped table-hover">
+            <table class="table table-striped table-hover ">
                 <thead>
                     <tr>
                         <th>#</th>
                         <th>Tên khách</th>
                         <th>Loại khách</th>
                         <th>Điện thoại</th>
+                        <th>Email</th>
                         <th>Địa chỉ</th>
+                        <th>Ngày tạo</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -67,8 +93,20 @@
                                 <th scope="row">{{$item->customer_id}}</th>
                                 <td>{{$item->customer_name}}</td>
                                 <td>{{$item->customer_group->customer_group_name}}</td>
-                                <td>{{$item->customer_name}}</td>
+                                <td>{{$item->mobile}}</td>
+                                <td>{{$item->email}}</td>
                                 <td>{{$item->address}}</td>
+                                <td>{{$item->created_date}}</td>
+                                <td>
+                                    <a data-title="Cập nhật khách hàng" data-toggle="modal"
+                                       data-target="#user-modal"
+                                       data-customer_name="{{$item->customer_name}}"
+                                       data-mobile="{{$item->mobile}}"
+                                       data-email="{{$item->email}}"
+                                       data-customer_id="{{$item->customer_id}}"
+                                       data-customer_group_id="{{$item->customer_group->customer_group_id}}"
+                                       data-address="{{$item->address}}">sửa</a>
+                                </td>
                             </tr>
                         @endforeach
                     @else
@@ -94,27 +132,48 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="exampleModalLabel">New message</h4>
                 </div>
-                <div class="modal-body">
-                    <form>
+                <form action="{{ route('admin.customer.save') }}" method="post">
+                    @csrf
+                    <div class="modal-body">
                         <div class="form-group">
-                            <label for="recipient-name" class="control-label">Recipient:</label>
-                            <input type="text" class="form-control" id="recipient-name">
+                            <label for="customer_name" class="control-label">Tên khách hàng:</label>
+                            <input type="text" class="form-control" id="customer_name" name="customer_name">
+                            <input type="hidden" class="form-control" id="customer_id" name="customer_id">
                         </div>
                         <div class="form-group">
-                            <label for="message-text" class="control-label">Message:</label>
-                            <textarea class="form-control" id="message-text"></textarea>
+                            <label for="email" class="control-label">Email:</label>
+                            <input type="text" class="form-control" id="email" name="email">
                         </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Send message</button>
-                </div>
+                        <div class="form-group">
+                            <label for="mobile" class="control-label">Mobile:</label>
+                            <input type="text" class="form-control" id="mobile" name="mobile">
+                        </div>
+                        <div class="form-group">
+                            <label for="date" class="control-label">Ngày sinh:</label>
+                            <input type="date" class="form-control" id="date" name="date">
+                        </div>
+                        <div class="form-group">
+                            <label for="customer_group" class="control-label">Loại khách:</label>
+                            <select multiple class="form-control" name="customer_group">
+                                @foreach($customerGroup AS $item)
+                                    <option value="{{ $item['customer_group_id'] }}">{{ $item['customer_group_name'] }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="address" class="control-label">Message:</label>
+                            <textarea class="form-control" id="address" name="address"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
     <!-- end modal -->
-
 
     <div class="panel panel-info collapse" id="filter">
         <div class="panel-heading">
@@ -144,9 +203,10 @@
                 <div class="form-group">
                     <label for="inputname3" class="col-sm-2 control-label">Loại khách</label>
                     <div class="col-sm-10">
-                        <select multiple class="form-control">
-                            <option>Khách vip</option>
-                            <option>Khách quen</option>
+                        <select multiple class="form-control" name="custom_group">
+                            @foreach($customerGroup AS $item)
+                                <option value="{{ $item['customer_group_id'] }}">{{ $item['customer_group_name'] }}</option>
+                            @endforeach
                         </select>
                     </div>
                 </div>
