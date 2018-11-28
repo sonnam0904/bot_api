@@ -38,7 +38,7 @@ Route::group(
             'prefix' => 'customer'
         ], function () {
 
-        Route::get('/', 'Admin\CustomerController@index')
+        Route::any('/', 'Admin\CustomerController@index')
             ->name('admin.customer.index');
         Route::post('/save', 'Admin\CustomerController@save')
             ->name('admin.customer.save');

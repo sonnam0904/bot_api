@@ -16,7 +16,26 @@ class CustomerController extends AdminBaseController
 
     public function index()
     {
-        $data = Customer::with(['customer_group'])->orderBy('created_date', 'desc')->paginate();
+        $filter = request()->all();
+
+        $data = Customer::with(['customer_group']);
+        if ($filter)
+        {
+            unset($filter['_token']);
+            foreach ($filter AS $key => $filters)
+            {
+                if(empty($filters))
+                {
+                    unset($filter[$key]);
+                }
+                else
+                {
+                    $data = $data->where($key, $filters);
+                }
+
+            }
+        }
+        $data = $data->orderBy('created_date', 'desc')->paginate();
 
         $customerGroup = CustomerGroup::all()->toArray();
 
@@ -24,7 +43,8 @@ class CustomerController extends AdminBaseController
             'title' => $this->getTitle(),
             'routeLink' => request()->getRequestUri(),
             'data' => $data,
-            'customerGroup' => $customerGroup
+            'customerGroup' => $customerGroup,
+            'filter' => $filter
         ]);
     }
 
@@ -52,10 +72,12 @@ class CustomerController extends AdminBaseController
         {
             return response()->redirectToRoute('admin.customer.index')->with('error_message', 'Chưa nhập nhóm khách');
         }
-//        if (!isset($data['date']) || empty($data['date']))
-//        {
-//            return response()->redirectToRoute('admin.customer.index')->with('error_message', 'Chưa nhập ngày sinh khách');
-//        }
+        if (!isset($data['date']) || empty($data['date']))
+        {
+            return response()->redirectToRoute('admin.customer.index')->with('error_message', 'Chưa nhập ngày sinh của khách');
+        }
+
+        list($yob, $mob, $dob) = explode('-', $data['date']);
 
         if (isset($data['customer_id']) && $data['customer_id'])
         {
@@ -67,6 +89,9 @@ class CustomerController extends AdminBaseController
                     'email' => $data['email'],
                     'mobile' => $data['mobile'],
                     'address' => $data['address'],
+                    'dob' => $dob,
+                    'mob' => $mob,
+                    'yob' => $yob,
                     'customer_group_id' => $data['customer_group'],
                     'updated_date' => date('Y-m-d H:i:s', time())
                 ]);
@@ -84,6 +109,9 @@ class CustomerController extends AdminBaseController
                 'email' => $data['email'],
                 'mobile' => $data['mobile'],
                 'address' => $data['address'],
+                'dob' => $dob,
+                'mob' => $mob,
+                'yob' => $yob,
                 'customer_group_id' => $data['customer_group'],
                 'created_date' => date('Y-m-d H:i:s', time())
             ]);

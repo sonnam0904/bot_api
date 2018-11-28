@@ -15,6 +15,7 @@
             var customer_name = button.data('customer_name')
             var mobile = button.data('mobile')
             var email = button.data('email')
+            var date = button.data('date')
             var customer_group_id = button.data('customer_group_id')
             var customer_id = button.data('customer_id')
             var address = button.data('address')
@@ -24,12 +25,12 @@
             // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
             var modal = $(this)
             modal.find('.modal-title').text(title)
-
             modal.find('.modal-body input[name="customer_id"]').val(customer_id)
             modal.find('.modal-body input[name="customer_name"]').val(customer_name)
             modal.find('.modal-body input[name="mobile"]').val(mobile)
             modal.find('.modal-body input[name="email"]').val(email)
-            modal.find('.modal-body select[name="customer_group_id"]').val(customer_group_id)
+            modal.find('.modal-body input[name="date"]').val(date)
+            modal.find('.modal-body option[value="'+customer_group_id+'"]').attr("selected","selected");
             modal.find('.modal-body textarea[name="address"]').html(address)
         })
     </script>
@@ -104,6 +105,7 @@
                                        data-mobile="{{$item->mobile}}"
                                        data-email="{{$item->email}}"
                                        data-customer_id="{{$item->customer_id}}"
+                                       data-date="{{$item->yob}}-{{$item->mob}}-{{$item->dob}}"
                                        data-customer_group_id="{{$item->customer_group->customer_group_id}}"
                                        data-address="{{$item->address}}">sửa</a>
                                 </td>
@@ -122,7 +124,7 @@
 
     <p class="text-center">
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#user-modal" data-whatever="@mdo">Thêm mới khách hàng</button>
-        <button class="btn btn-link" data-toggle="collapse" data-target="#filter">Mở bộ lọc nâng cao</button>
+        <button class="btn btn-link" data-toggle="collapse" data-target="#filter">Mở bộ lọc nâng cao @if(!empty($filter))<span class="badge label-danger">{{ count($filter) }}</span>@endif</button>
     </p>
     <!-- modal -->
     <div class="modal fade" id="user-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
@@ -181,44 +183,45 @@
         </div>
 
         <div class="panel-body">
-            <form class="form-horizontal">
+            <form class="form-horizontal" action="{{ route('admin.customer.index') }}" method="post">
+                @csrf
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
                     <div class="col-sm-10">
-                        <input type="email" class="form-control" id="inputEmail3" placeholder="Email" name="email">
+                        <input type="email" class="form-control" id="inputEmail3" placeholder="Email" name="email" value="{{ isset($filter['email']) ? $filter['email'] : '' }}">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputname3" class="col-sm-2 control-label">Tên khách</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="inputname3" placeholder="Tên khách" name="customer_name">
+                        <input type="text" class="form-control" id="inputname3" placeholder="Tên khách" name="customer_name" value="{{ isset($filter['customer_name']) ? $filter['customer_name'] : '' }}">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputmobile" class="col-sm-2 control-label">Điện thoại</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="inputmobile" placeholder="Điện thoại" name="mobile">
+                        <input type="text" class="form-control" id="inputmobile" placeholder="Điện thoại" name="mobile" value="{{ isset($filter['mobile']) ? $filter['mobile'] : '' }}">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputname3" class="col-sm-2 control-label">Loại khách</label>
                     <div class="col-sm-10">
-                        <select multiple class="form-control" name="custom_group">
+                        <select multiple class="form-control" name="customer_group_id">
                             @foreach($customerGroup AS $item)
-                                <option value="{{ $item['customer_group_id'] }}">{{ $item['customer_group_name'] }}</option>
+                                <option value="{{ $item['customer_group_id'] }}" @if(isset($filter['customer_group_id']) && $filter['customer_group_id']==$item['customer_group_id']) selected="selected" @endif>{{ $item['customer_group_name'] }}</option>
                             @endforeach
                         </select>
                     </div>
                 </div>
-                <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox"> Lọc theo danh sách
-                            </label>
-                        </div>
-                    </div>
-                </div>
+                {{--<div class="form-group">--}}
+                    {{--<div class="col-sm-offset-2 col-sm-10">--}}
+                        {{--<div class="checkbox">--}}
+                            {{--<label>--}}
+                                {{--<input type="checkbox"> Lọc theo danh sách--}}
+                            {{--</label>--}}
+                        {{--</div>--}}
+                    {{--</div>--}}
+                {{--</div>--}}
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
                         <button type="submit" class="btn btn-default">Lọc</button>
