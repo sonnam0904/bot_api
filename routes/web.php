@@ -43,4 +43,17 @@ Route::group(
         Route::post('/save', 'Admin\CustomerController@save')
             ->name('admin.customer.save');
     });
+
+    Route::group(
+        [
+            'prefix' => 'production'
+        ], function () {
+
+        Route::any('/', 'Admin\ProductionController@index')
+            ->name('admin.production.index');
+        Route::post('/save', 'Admin\ProductionController@save')
+            ->name('admin.production.save');
+        Route::post('/detail', 'Admin\ProductionController@detail')
+            ->name('admin.production.detail');
+    });
 });

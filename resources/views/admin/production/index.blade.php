@@ -157,7 +157,7 @@
                         <div class="form-group">
                             <label for="customer_group" class="control-label">Loại khách:</label>
                             <select class="form-control" name="customer_group">
-                                @foreach($customerGroup AS $item)
+                                @foreach($productCategory AS $item)
                                     <option value="{{ $item['customer_group_id'] }}">{{ $item['customer_group_name'] }}</option>
                                 @endforeach
                             </select>

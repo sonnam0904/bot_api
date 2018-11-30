@@ -153,12 +153,12 @@ return [
                 [
                     'text' => 'Danh sách mẫu mã',
                     'icon' => 'list',
-                    'url' => 'admin/product',
+                    'url' => 'admin/production',
                 ],
                 [
                     'text' => 'Danh sách sản phẩm',
                     'icon' => 'list',
-                    'url' => 'admin/product-details',
+                    'url' => 'admin/production/detail',
                 ],
 
                 [
@@ -171,6 +171,18 @@ return [
                     'icon' => 'list',
                     'url' => 'admin/product-color',
                 ],
+            ]
+        ],
+        'Tools',
+        [
+            'text' => 'Facebook',
+            'icon' => 'facebook-f',
+            'submenu' => [
+                [
+                    'text' => 'Share automation',
+                    'icon' => 'list',
+                    'url' => '#',
+                ]
             ]
         ],
 //        [
