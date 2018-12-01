@@ -107,7 +107,7 @@
                                        data-customer_id="{{$item->customer_id}}"
                                        data-date="{{$item->yob}}-{{$item->mob}}-{{$item->dob}}"
                                        data-customer_group_id="{{$item->customer_group->customer_group_id}}"
-                                       data-address="{{$item->address}}">sửa</a>
+                                       data-address="{{$item->address}}">Sửa</a>
                                 </td>
                             </tr>
                         @endforeach

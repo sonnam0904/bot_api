@@ -13,6 +13,6 @@ class Production extends Model
 
     public function product_details()
     {
-        return $this->hasMany('App\Models\ProductDetails', 'product_detail_id','product_id');
+        return $this->hasMany('App\Models\ProductDetails', 'product_id');
     }
 }

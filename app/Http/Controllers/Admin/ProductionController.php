@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\ProductCategory;
 use App\Models\Production;
-use Auth;
 use App\Models\Customer;
 
 class ProductionController extends AdminBaseController
@@ -12,7 +11,7 @@ class ProductionController extends AdminBaseController
 
     public function getTitle()
     {
-        return 'Danh sách sản phẩm';
+        return 'Danh sách mẫu mã';
     }
 
     public function index()
@@ -52,74 +51,50 @@ class ProductionController extends AdminBaseController
     {
         $data = request()->all();
 
-        if (!isset($data['customer_name']) || empty($data['customer_name']))
+        if (!isset($data['product_category_id']) || empty($data['product_category_id']))
         {
-            return response()->redirectToRoute('admin.customer.index')->with('error_message', 'Chưa nhập tên khách');
+            return response()->redirectToRoute('admin.production.index')->with('error_message', 'Chưa nhập chọn loại sản phẩm');
         }
-        if (!isset($data['email']) || empty($data['email']))
+        if (!isset($data['product_name']) || empty($data['product_name']))
         {
-            return response()->redirectToRoute('admin.customer.index')->with('error_message', 'Chưa nhập email khách');
+            return response()->redirectToRoute('admin.production.index')->with('error_message', 'Chưa nhập tên mẫu mã');
         }
-        if (!isset($data['mobile']) || empty($data['mobile']))
+        if (!isset($data['product_desc']) || empty($data['product_desc']))
         {
-            return response()->redirectToRoute('admin.customer.index')->with('error_message', 'Chưa nhập mobile khách');
-        }
-        if (!isset($data['address']) || empty($data['address']))
-        {
-            return response()->redirectToRoute('admin.customer.index')->with('error_message', 'Chưa nhập địa chỉ khách');
-        }
-        if (!isset($data['customer_group']) || empty($data['customer_group']))
-        {
-            return response()->redirectToRoute('admin.customer.index')->with('error_message', 'Chưa nhập nhóm khách');
-        }
-        if (!isset($data['date']) || empty($data['date']))
-        {
-            return response()->redirectToRoute('admin.customer.index')->with('error_message', 'Chưa nhập ngày sinh của khách');
+            return response()->redirectToRoute('admin.production.index')->with('error_message', 'Chưa nhập mô tả mẫu mã');
         }
 
-        list($yob, $mob, $dob) = explode('-', $data['date']);
-
-        if (isset($data['customer_id']) && $data['customer_id'])
+        if (isset($data['product_id']) && $data['product_id'])
         {
-            $customer = Customer::find($data['customer_id']);
-            if ($customer)
+            $productId = Production::find($data['product_id']);
+            if ($productId)
             {
-                $customer->update([
-                    'customer_name' => $data['customer_name'],
-                    'email' => $data['email'],
-                    'mobile' => $data['mobile'],
-                    'address' => $data['address'],
-                    'dob' => $dob,
-                    'mob' => $mob,
-                    'yob' => $yob,
-                    'customer_group_id' => $data['customer_group'],
-                    'updated_date' => date('Y-m-d H:i:s', time())
+                $productId->update([
+                    'product_category_id' => $data['product_category_id'],
+                    'product_name' => $data['product_name'],
+                    'product_desc' => $data['product_desc'],
+                    'product_update_date' => date('Y-m-d H:i:s', time())
                 ]);
-                return response()->redirectToRoute('admin.customer.index')->with('success_message', 'Cập nhật thành công');
+                return response()->redirectToRoute('admin.production.index')->with('success_message', 'Cập nhật thành công');
             }
             else
             {
-                return response()->redirectToRoute('admin.customer.index')->with('error_message', 'Cập nhật thất bại');
+                return response()->redirectToRoute('admin.production.index')->with('error_message', 'Cập nhật thất bại');
             }
         }
         else
         {
-            $result = Customer::insert([
-                'customer_name' => $data['customer_name'],
-                'email' => $data['email'],
-                'mobile' => $data['mobile'],
-                'address' => $data['address'],
-                'dob' => $dob,
-                'mob' => $mob,
-                'yob' => $yob,
-                'customer_group_id' => $data['customer_group'],
-                'created_date' => date('Y-m-d H:i:s', time())
+            $result = Production::insert([
+                'product_category_id' => $data['product_category_id'],
+                'product_name' => $data['product_name'],
+                'product_desc' => $data['product_desc'],
+                'product_create_date' => date('Y-m-d H:i:s', time())
             ]);
             if ($result)
             {
-                return response()->redirectToRoute('admin.customer.index')->with('success_message', 'Thêm thành công');
+                return response()->redirectToRoute('admin.production.index')->with('success_message', 'Thêm thành công');
             }
-            return response()->redirectToRoute('admin.customer.index')->with('error_message', 'Thêm thất bại');
+            return response()->redirectToRoute('admin.production.index')->with('error_message', 'Thêm thất bại');
         }
     }
 }
